@@ -9,13 +9,19 @@ const productos = [
   { id: 4, nombre: "Samsung 980 Pro 1TB", precio: 89 }
 ];
 
-let carrito = {
-  id_carrito: 1,
-  id_cliente: 1
-};
+let carrito = { id_carrito: 1, id_cliente: 1 };
 
-let detalleCarrito = [];
-let contador = 0;
+// 🔥 CARGAR DESDE localStorage
+let detalleCarrito = JSON.parse(localStorage.getItem("carrito")) || [];
+let contador = detalleCarrito.length;
+
+
+/* =========================
+   GUARDAR EN localStorage
+========================= */
+function guardarCarrito() {
+  localStorage.setItem("carrito", JSON.stringify(detalleCarrito));
+}
 
 
 /* =========================
@@ -28,6 +34,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const contadorCarrito = document.querySelector(".badge");
   const modalCarrito = document.getElementById("modalCarritoItems");
   const modalCount = document.getElementById("modalCartCount");
+
+  // 🔥 ACTUALIZAR CONTADOR AL CARGAR
+  if (contadorCarrito) contadorCarrito.innerText = contador;
+  if (modalCount) modalCount.innerText = contador;
 
   botones.forEach((boton) => {
     boton.addEventListener("click", () => {
@@ -48,6 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         contador++;
+
+        guardarCarrito(); // 🔥 guardar
 
         if (contadorCarrito) contadorCarrito.innerText = contador;
         if (modalCount) modalCount.innerText = contador;
@@ -76,6 +88,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // 🔥 MOSTRAR AL ABRIR MODAL
+  mostrarCarrito(modalCarrito);
+
+  // 🔥 FINALIZAR COMPRA
   window.finalizarCompra = function () {
     if (detalleCarrito.length === 0) {
       alert("Tu carrito está vacío");
@@ -84,6 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       detalleCarrito = [];
       contador = 0;
+
+      localStorage.removeItem("carrito"); // 🔥 limpiar
 
       if (contadorCarrito) contadorCarrito.innerText = 0;
       if (modalCount) modalCount.innerText = 0;
